@@ -130,7 +130,7 @@ class IntranetSGDFModule(_Module):
 
     def get_current_person(self):
         iid = self.browser.get_person_iid()
-        return self.browser.get_person(iid)
+        return self.get_person(iid)
 
     def get_person(self, obj):
         if isinstance(obj, (_IID, str, bytes)):
