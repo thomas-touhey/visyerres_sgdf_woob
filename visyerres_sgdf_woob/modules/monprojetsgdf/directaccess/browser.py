@@ -90,6 +90,10 @@ class MonProjetSGDFAPIBrowser(_LoginBrowser):
         )
 
     @_need_login
+    def check_login(self):
+        pass
+
+    @_need_login
     def iter_countries(self):
         self.countries_page.go()
         return self.page.iter_countries()

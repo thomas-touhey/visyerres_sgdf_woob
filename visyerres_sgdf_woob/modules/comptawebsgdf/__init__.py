@@ -26,7 +26,7 @@ from woob.tools.backend import (
 )
 from woob.tools.value import ValueBackendPassword as _ValueBackendPassword
 
-from .browser import ComptaWebSGDFBrowser as _ComptaWebSGDFBrowser
+from .directaccess import ComptaWebSGDFBrowser as _ComptaWebSGDFBrowser
 
 __all__ = ['ComptaWebSGDFModule']
 

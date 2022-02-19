@@ -157,4 +157,8 @@ class IntranetSGDFAPIBrowser(_LoginBrowser, _StatesMixin):
         self.access_token_expires_at = data._access_token_expires_at
         self.refresh_token = data._refresh_token
 
+    @_need_login
+    def check_login(self):
+        return
+
 # End of file.

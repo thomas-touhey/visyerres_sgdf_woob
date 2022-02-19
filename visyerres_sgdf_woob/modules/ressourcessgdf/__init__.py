@@ -26,7 +26,7 @@ from woob.tools.backend import (
 )
 from woob.tools.value import ValueBackendPassword as _ValueBackendPassword
 
-from .browser import RessourcesSGDFBrowser as _RessourcesSGDFBrowser
+from .directaccess import RessourcesSGDFBrowser as _RessourcesSGDFBrowser
 
 __all__ = ['RessourcesSGDFModule']
 

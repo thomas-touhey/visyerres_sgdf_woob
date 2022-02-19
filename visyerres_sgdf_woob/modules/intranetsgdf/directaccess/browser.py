@@ -334,6 +334,10 @@ class IntranetSGDFBrowser(_LoginBrowser):
 
         raise _IntranetLoginError(original_message=error)
 
+    @_need_login
+    def check_login(self):
+        pass
+
     def request_code(
         self,
         last_name: str,

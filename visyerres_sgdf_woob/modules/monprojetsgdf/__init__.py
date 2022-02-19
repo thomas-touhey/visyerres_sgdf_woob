@@ -43,7 +43,7 @@ from woob.tools.backend import (
 )
 from woob.tools.value import ValueBackendPassword as _ValueBackendPassword
 
-from .browser import MonProjetSGDFAPIBrowser as _MonProjetSGDFAPIBrowser
+from .directaccess import MonProjetSGDFAPIBrowser as _MonProjetSGDFAPIBrowser
 
 __all__ = ['MonProjetSGDFModule']
 

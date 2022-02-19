@@ -56,6 +56,6 @@ class RessourcesSGDFBrowser(_LoginBrowser):
 
     @_need_login
     def check_login(self):
-        return  # TODO: not required other than for testing.
+        return
 
 # End of file.
