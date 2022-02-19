@@ -15,8 +15,8 @@
 # *****************************************************************************
 """ intranetsgdf API browser declaration. """
 
-from .browser import IntranetSGDFBrowser
+from .browser import IntranetSGDFAPIBrowser
 
-__all__ = ['IntranetSGDFBrowser']
+__all__ = ['IntranetSGDFAPIBrowser']
 
 # End of file.

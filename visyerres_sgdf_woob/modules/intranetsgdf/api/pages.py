@@ -23,7 +23,7 @@ from woob.browser.elements import (
 from woob.browser.filters.json import Dict as _Dict
 from woob.browser.filters.standard import (
     CleanDecimal as _CleanDecimal, CleanText as _CleanText,
-    Coalesce as _Coalesce, Integer as _Integer,
+    Coalesce as _Coalesce,
 )
 from woob.browser.pages import JsonPage as _JsonPage
 from woob.capabilities.base import BaseObject as _BaseObject
@@ -53,15 +53,12 @@ class TokenPage(_JsonPage):
         )
 
         def obj__access_token_expires_at(self):
-            seconds = _Integer(
-                _CleanDecimal.SI(
-                    _Dict('expires_in', default=''),
-                    default='',
-                ),
+            seconds = _CleanDecimal.SI(
+                _Dict('expires_in', default=''),
                 default=None,
             )
 
-            if seconds is None:
+            if not seconds:
                 return None
 
             return _datetime.utcnow() + _timedelta(seconds=seconds)

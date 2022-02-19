@@ -30,6 +30,7 @@ from typing import Optional as _Optional
 
 from woob.browser.browsers import (
     LoginBrowser as _LoginBrowser, StatesMixin as _StatesMixin, URL as _URL,
+    need_login as _need_login,
 )
 
 from .pages import TokenPage as _TokenPage
@@ -38,6 +39,23 @@ __all__ = ['IntranetSGDFAPIBrowser']
 
 
 class IntranetSGDFAPIBrowser(_LoginBrowser, _StatesMixin):
+    """
+    Browser for the intranet API.
+
+    This class is inspired from the following class in the Java
+    client implementation:
+
+    https://gitlab.com/sgdf/api-intranet-java
+
+    Most notably the following files:
+
+    * src/main/java/fr/sgdf/intranetapi/ApiSession.java (auth & request)
+
+    Which is probably quite inspired in design from some WebServices
+    on the directaccess intranet, notably the ``Authentification.asmx``
+    WebService.
+    """
+
     __state__ = (
         'access_token', 'access_token_type', 'access_token_expires_at_s',
         'refresh_token',
@@ -48,8 +66,8 @@ class IntranetSGDFAPIBrowser(_LoginBrowser, _StatesMixin):
         'https://intranetapi.sgdf.fr',
     )
 
-    client_id: str
-    audience: str
+    client_id: _Optional[str] = None
+    audience: _Optional[str] = None
     access_token: _Optional[str] = None
     access_token_type: _Optional[str] = None
     access_token_expires_at: _Optional[_datetime] = None
@@ -60,11 +78,37 @@ class IntranetSGDFAPIBrowser(_LoginBrowser, _StatesMixin):
         _TokenPage,
     )
 
-    def __init__(self, client_id, audience, *args, **kwargs):
-        super(IntranetSGDFAPIBrowser, self).__init__(*args, **kwargs)
+    def __init__(self, config, *args, **kwargs):
+        super(IntranetSGDFAPIBrowser, self).__init__(
+            config['code'].get(),
+            config['password'].get(),
+            *args,
+            **kwargs,
+        )
 
-        self.client_id = client_id
-        self.audience = audience
+        self.client_id = config['api_client_id'].get()
+        self.audience = config['api_audience'].get()
+
+        for attr in ('client_id', 'audience'):
+            if not getattr(self, attr):
+                raise ValueError(f'Missing configuration param {attr!r}.')
+
+    def build_request(self, url, *args, **kwargs):
+        headers = kwargs.setdefault('headers', {})
+
+        if not self.token_page.match(url):
+            headers['idAppelant'] = self.client_id
+
+            if self.logged:
+                headers['Authorization'] = (
+                    f'{self.access_token_type or "Bearer"} {self.access_token}'
+                )
+
+        return super(IntranetSGDFAPIBrowser, self).build_request(
+            url,
+            *args,
+            **kwargs,
+        )
 
     @property
     def logged(self):
@@ -86,36 +130,26 @@ class IntranetSGDFAPIBrowser(_LoginBrowser, _StatesMixin):
             value = value.fromisoformat()
         self.access_token_expires_at = value
 
-    def build_request(self, *args, **kwargs):
-        headers = kwargs.setdefault('headers', {})
-        if self.logged:
-            headers['Authorization'] = (
-                f'{self.access_token_type or "Bearer"} {self.access_token}'
-            )
-
-        return super(IntranetSGDFAPIBrowser, self).build_request(
-            *args,
-            **kwargs,
-        )
-
     def do_login(self):
+        data = {
+            'client_id': self.client_id,
+            'audience': self.audience,
+        }
+
         if self.refresh_token:
-            self.token_page.go(data={
+            data.update({
                 'grant_type': 'refresh_token',
-                'client_id': self.client_id,
-                'audience': self.audience,
                 'refresh_token': self.refresh_token,
                 'no_refresh': 'false',
             })
         else:
-            self.refresh_token(data={
+            data.update({
                 'grant_type': 'password',
-                'client_id': self.client_id,
-                'audience': self.audience,
                 'username': self.username,
                 'password': self.password,
             })
 
+        self.token_page.go(data=data)
         data = self.page.get_access_data()
 
         self.access_token = data._access_token
