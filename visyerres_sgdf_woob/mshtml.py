@@ -20,10 +20,11 @@
     ASP.NET framework, such as the SGDF intranet.
 """
 
+import os.path as _path
+
 import re as _re
 from io import StringIO as _StringIO
 from os import environ as _environ, listdir as _listdir
-import os.path as _path
 
 from lxml.etree import (
     Element as _Element, XMLSyntaxError as _XMLSyntaxError,

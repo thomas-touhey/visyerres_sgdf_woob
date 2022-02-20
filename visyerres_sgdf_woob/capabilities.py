@@ -37,7 +37,9 @@ __all__ = [
 
 
 class _IIDField(_Field):
-    """ A field which accepts intranet identifiers. """
+    """
+    A field which accepts intranet identifiers.
+    """
 
     def __init__(self, doc, **kwargs):
         super(_IIDField, self).__init__(doc, _IID, **kwargs)
@@ -51,7 +53,9 @@ class _IIDField(_Field):
 
 
 class Continent(_BaseObject):
-    """ Represents a continent. """
+    """
+    Represents a continent.
+    """
 
     name = _StringField('Name for the continent')
     omms_id = _IntField('OMMS identifier for the continent')
@@ -59,7 +63,9 @@ class Continent(_BaseObject):
 
 
 class Country(_BaseObject):
-    """ Represents a country. """
+    """
+    Represents a country.
+    """
 
     name = _StringField('Country name')
     tam_id = _IntField('TAM identifier of the country')
@@ -69,7 +75,9 @@ class Country(_BaseObject):
 
 
 class Address(_BaseObject):
-    """ Represents a postal / residential address. """
+    """
+    Represents a postal / residential address.
+    """
 
     line_1 = _StringField('First line')
     line_2 = _StringField('Second line')
@@ -80,7 +88,9 @@ class Address(_BaseObject):
 
 
 class BirthPlace(_BaseObject):
-    """ Represents a birth place. """
+    """
+    Represents a birth place.
+    """
 
     postal_code = _StringField('Postal code')
     insee_code = _StringField('INSEE code')
@@ -89,7 +99,21 @@ class BirthPlace(_BaseObject):
 
 
 class StructureStatus(_Enum):
-    """ Describe a structure status. """
+    """
+    Describe a structure status.
+
+    .. py:data:: OPEN
+
+        The structure is currently open, i.e. currently active.
+
+    .. py:data:: CLOSED
+
+        The structure is closed, i.e. no longer active.
+
+    .. py:data:: SUSPENDED
+
+        The structure is suspended, i.e. not currently active.
+    """
 
     UNKNOWN = 'unknown'
 
@@ -99,7 +123,101 @@ class StructureStatus(_Enum):
 
 
 class StructureType(_Enum):
-    """ Describe a structure type. """
+    """
+    Describe a structure type.
+
+    .. py:data:: SOMMET
+
+        Structure tree root; note that there are currently two roots,
+        the 'SCOUTS ET GUIDES DE FRANCE' root which is open, and the
+        'GUIDES DE FRANCE' root which is closed.
+
+    .. py:data:: TERRITOIRE
+
+        Usually a subdivision of the root; manages a set of groups
+        usually located in a given geographic area and linked to one or more
+        national administrative subdivisions, e.g. regions or departments
+        depending on the needs.
+
+    .. py:data:: GROUPE
+
+        Usually a subdivision of territories; manages the activity from a
+        local point of view, i.e. a municipality or a set of municipalities.
+
+    .. py:data:: ASSOCIES_N
+
+        A group of people formed to accomplish a mission at root level.
+
+    .. py:data:: ASSOCIES_T
+
+        A group of people formed to accomplish a mission at territory level.
+
+    .. py:data:: ASSOCIES_L
+
+        A group of people formed to accomplish a mission at group level.
+
+    .. py:data:: CENTRE_NATIONAL
+
+        Either a national administrative subdivision such as regions,
+        resource centers within the organization, or other teams.
+
+    .. py:data:: UNITE_FARFADETS
+
+        A unit with participants between 6 and 8, accompanied by their parents.
+        Used to be 'Sarabandes' until 2007. More information:
+
+        https://fr.scoutwiki.org/Farfadets
+        https://fr.scoutwiki.org/Sarabande
+
+    .. py:data:: UNITE_8_11_ANS
+
+        A unit with participants between 8 and 11, accompanied by their
+        scout leaders (chefs et cheftaines).
+        Usually called 'Louveteaux-jeanettes-moussaillons'; used to be
+        called 'Louveteaux-louvettes' before the SDF/GDF fusion in 2004.
+        More information:
+
+        https://fr.scoutwiki.org/Louveteaux_et_jeannettes
+
+    .. py:data:: UNITE_11_14_ANS
+
+        A unit with participants between 11 and 14, accompanied by their
+        scout leaders (chefs et cheftaines).
+        Usually called 'Scouts-guides-mousses'.
+        More information:
+
+        https://fr.scoutwiki.org/Scouts_et_guides_(SGDF)
+
+    .. py:data:: UNITE_14_17_ANS
+
+        A unit with participants between 14 and 17, accompanied by their
+        scout leaders (chefs et cheftaines).
+        Usually called 'Pionniers-caravelles'.
+        More information:
+
+        https://fr.scoutwiki.org/Pionniers_et_caravelles_(SGDF)
+
+    .. py:data:: UNITE_17_20_ANS
+
+        A unit with participants between 17 and 20, accompanied by their
+        accompanist (accompagnateur compagnons).
+        Usually called 'Compagnons'.
+        More information:
+
+        https://fr.scoutwiki.org/Compagnons_(SGDF)
+
+    .. py:data:: UNITE_VENT_DU_LARGE
+
+        A unit with adult participants with handicaps.
+        Usually called 'Audace', previously called 'Vent du Large'.
+        More information:
+
+        https://fr.scoutwiki.org/Audace
+
+    .. py:data:: AUTRE
+
+        Other structure.
+    """
 
     UNKNOWN = 'unknown'
 
@@ -123,10 +241,16 @@ class StructureType(_Enum):
 
 
 class Structure(_BaseObject):
-    """ Representation of the structure. """
+    """
+    Representation of the structure.
+    """
 
     @classmethod
     def Label(klass, *args, **kwargs):
+        """
+        Get a filter for reading the code and name from a string.
+        """
+
         class Filter(_CleanText):
             def __call__(self, item):
                 full_name = super(Filter, self).__call__(item)
@@ -147,6 +271,10 @@ class Structure(_BaseObject):
 
     @classmethod
     def Type(klass, *args, **kwargs):
+        """
+        Get a filter for reading the type from a string.
+        """
+
         class Filter(_CleanText):
             def filter(self, item):  # noqa: A003
                 result = super(Filter, self).filter(item).casefold()
@@ -188,6 +316,10 @@ class Structure(_BaseObject):
 
     @classmethod
     def Status(klass, *args, **kwargs):
+        """
+        Get a filter for reading the status from a string.
+        """
+
         class Filter(_CleanText):
             def filter(self, item):  # noqa: A003
                 result = super(Filter, self).filter(item).casefold()
@@ -216,7 +348,13 @@ class Structure(_BaseObject):
 
     @property
     def label(self):
-        return None
+        """
+        Get the structure label.
+        """
+
+        if self.code and self.name:
+            return f'{self.code} - {self.name}'
+        return _NotAvailable
 
     @label.setter
     def label(self, value):
@@ -224,10 +362,16 @@ class Structure(_BaseObject):
 
 
 class Function(_BaseObject):
-    """ Describe a function and its properties. """
+    """
+    Describe a function and its properties.
+    """
 
     @classmethod
     def Label(klass, *args, **kwargs):
+        """
+        Get a filter for gathering the structure code and name from a label.
+        """
+
         class Filter(_CleanText):
             __slots__ = ('_is_full',)
 
@@ -275,7 +419,13 @@ class Function(_BaseObject):
 
     @property
     def label(self):
-        return None
+        """
+        Get the function label.
+        """
+
+        if self.code and self.name:
+            return f'{self.name} ({self.code})'
+        return _NotAvailable
 
     @label.setter
     def label(self, value):
@@ -283,7 +433,9 @@ class Function(_BaseObject):
 
 
 class PersonType(_Enum):
-    """ Describe the person type. """
+    """
+    Describe the person type.
+    """
 
     UNKNOWN = 'unknown'
 
@@ -292,7 +444,9 @@ class PersonType(_Enum):
 
 
 class PersonTitle(_Enum):
-    """ Describe a person title. """
+    """
+    Describe a person title.
+    """
 
     UNKNOWN = 'unknown'
 
@@ -305,7 +459,9 @@ class PersonTitle(_Enum):
 
 
 class PersonStatus(_Enum):
-    """ Describe a person status. """
+    """
+    Describe a person status.
+    """
 
     UNKNOWN = 'unknown'
 
@@ -318,7 +474,9 @@ class PersonStatus(_Enum):
 
 
 class AllocationsRegime(_Enum):
-    """ Describe an allocations regime. """
+    """
+    Describe an allocations regime.
+    """
 
     UNKNOWN = 'unknown'
 
@@ -328,7 +486,9 @@ class AllocationsRegime(_Enum):
 
 
 class Person(_BaseObject):
-    """ Describe an adherent or a legal entity and its properties. """
+    """
+    Describe an adherent or a legal entity and its properties.
+    """
 
     TYPE_UNKNOWN = PersonType.UNKNOWN
     TYPE_INDIVIDUAL = PersonType.INDIVIDUAL
@@ -402,7 +562,7 @@ class Person(_BaseObject):
 
     @property
     def title(self):
-        """ Person title. """
+        """ Person civility title. """
 
         if not _empty(self._title):
             return self._title
@@ -426,14 +586,15 @@ class Person(_BaseObject):
 
     @property
     def _full_name_components(self):
-        """ Get the full name components.
+        """
+        Get the full name components.
 
-            The result is available as a tuple of the following elements:
+        The result is available as a tuple of the following elements:
 
-            * Deduced title, when available.
-            * Deduced last name, when available.
-            * Deduced first name, when available.
-            * Deduced birth name, when available.
+        * Deduced title, when available.
+        * Deduced last name, when available.
+        * Deduced first name, when available.
+        * Deduced birth name, when available.
         """
 
         full_name = self.full_name
@@ -520,14 +681,18 @@ class Person(_BaseObject):
 
     @property
     def deduced_last_name(self):
-        """ Deduced last name from the full name, when available. """
+        """
+        Deduced last name from the full name, when available.
+        """
 
         _, result, _, _ = self._full_name_components
         return result
 
     @property
     def deduced_first_name(self):
-        """ Deduced first name from the full name, when available. """
+        """
+        Deduced first name from the full name, when available.
+        """
 
         _, _, result, _ = self._full_name_components
         return result
@@ -536,7 +701,9 @@ class Person(_BaseObject):
 
     @property
     def birth_name(self):
-        """ Birth name. """
+        """
+        Birth name.
+        """
 
         if not _empty(self._birth_name):
             return self._birth_name
@@ -583,7 +750,9 @@ class Person(_BaseObject):
 
 
 class Delegation(_BaseObject):
-    """ Describe a secondary function. """
+    """
+    Describe a secondary function.
+    """
 
     person = _Field('Person', Person)
     structure = _Field('Structure', Structure)
@@ -592,7 +761,9 @@ class Delegation(_BaseObject):
 
 
 class BankAccount(_BaseObject):
-    """ Describe a bank account. """
+    """
+    Describe a bank account.
+    """
 
     title = _StringField('Bank account title')
     rib = _StringField('Bank account RIB')
@@ -604,7 +775,9 @@ class BankAccount(_BaseObject):
 
 
 class InsuredGood(_BaseObject):
-    """ Describe an insured good ("bien"). """
+    """
+    Describe an insured good ("bien").
+    """
 
     iid = _IIDField('Good IID')
     name = _StringField('Good name')
