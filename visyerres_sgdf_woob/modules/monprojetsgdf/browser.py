@@ -15,8 +15,6 @@
 # *****************************************************************************
 """ monprojetsgdf browser definition. """
 
-from os import environ as _environ
-
 from woob.browser.browsers import (
     LoginBrowser as _LoginBrowser, URL as _URL, need_login as _need_login,
 )
@@ -32,38 +30,23 @@ from .pages import (
     ProjectsPage as _ProjectsPage, StructuresPage as _StructuresPage,
 )
 
-__all__ = ['MonProjetSGDFAPIBrowser']
+__all__ = ['MonProjetSGDFBrowser']
 
 
-class MonProjetSGDFAPIBrowser(_LoginBrowser):
-    BASEURL = _environ.get(
-        'MONPROJET_BASEURL',
-        'https://monprojet.sgdf.fr',
-    )
+class MonProjetSGDFBrowser(_LoginBrowser):
+    BASEURL = 'https://monprojet.sgdf.fr/'
 
-    login_page = _URL(
-        r'/api/login',
-        _LoginPage,
-    )
-    projects_page = _URL(
-        r'/api/ddc-projets',
-        _ProjectsPage,
-    )
+    login_page = _URL(r'api/login', _LoginPage)
+    projects_page = _URL(r'api/ddc-projets', _ProjectsPage)
     project_page = _URL(
-        r'/api/projets-annee/(?P<project_id>[0-9]+)',
+        r'api/projets-annee/(?P<project_id>[0-9]+)',
         _ProjectPage,
     )
-    structures_page = _URL(
-        r'/api/structures',
-        _StructuresPage,
-    )
-    countries_page = _URL(
-        r'/api/tam-ref/pays',
-        _CountriesPage,
-    )
+    structures_page = _URL(r'api/structures', _StructuresPage)
+    countries_page = _URL(r'api/tam-ref/pays', _CountriesPage)
 
     def __init__(self, *args, **kwargs):
-        super(MonProjetSGDFAPIBrowser, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def do_login(self):
         try:

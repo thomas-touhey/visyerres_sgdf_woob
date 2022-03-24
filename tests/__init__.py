@@ -13,10 +13,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" intranetsgdf directaccess browser declaration. """
-
-from .browser import ComptaWebSGDFBrowser
-
-__all__ = ['ComptaWebSGDFBrowser']
+""" Base directory for woob tests. """
 
 # End of file.

@@ -15,8 +15,6 @@
 # *****************************************************************************
 """ ressourcessgdf browser definition. """
 
-from os import environ as _environ
-
 from woob.browser.browsers import (
     LoginBrowser as _LoginBrowser, URL as _URL, need_login as _need_login,
 )
@@ -30,27 +28,20 @@ __all__ = ['RessourcesSGDFBrowser']
 
 
 class RessourcesSGDFBrowser(_LoginBrowser):
-    BASEURL = _environ.get(
-        'RESSOURCES_BASEURL',
-        'https://ressources.sgdf.fr',
-    )
+    BASEURL = 'https://ressources.sgdf.fr/'
 
-    login_page = _URL(
-        r'/login',
-        _LoginPage,
-    )
+    login_page = _URL(r'login', _LoginPage)
 
     def __init__(self, *args, **kwargs):
-        super(RessourcesSGDFBrowser, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def do_login(self):
         self.login_page.go()
         self.page.do_login(self.username, self.password)
 
         if self.login_page.is_here():
-            raise _BrowserIncorrectPassword(
-                self.page.get_error_message(),
-            )
+            message = self.page.get_error_message()
+            raise _BrowserIncorrectPassword(message)
 
         # TODO: what happens next?
 

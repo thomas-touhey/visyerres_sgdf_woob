@@ -20,8 +20,9 @@
     or when the API is not accessible by the client.
 """
 
+from collections import OrderedDict as _OrderedDict
 from datetime import date as _date
-from os import environ as _environ
+from itertools import chain as _chain
 
 from urllib.parse import urlparse as _urlparse
 from visyerres_sgdf_woob.capabilities import (
@@ -45,6 +46,7 @@ from woob.exceptions import (
     BrowserUnavailable as _BrowserUnavailable,
 )
 
+from .mock import app as _MockApp
 from .pages import (
     AdherentEditPage as _AdherentEditPage,
     AdherentInscriptionSearchPage as _AdherentInscriptionSearchPage,
@@ -80,184 +82,164 @@ from .pages import (
 __all__ = ['IntranetSGDFBrowser']
 
 
+class _IntranetSGDFURL(_URL):
+    def __init__(self, *args):
+        urls = _OrderedDict()  # used as an ordered set
+        other_args = []
+
+        for arg in args:
+            if isinstance(arg, str):
+                if arg.casefold().startswith('/specialisation/sgdf'):
+                    arg = arg[20:]
+                if arg.startswith('/'):
+                    arg = arg[1:]
+
+                urls['Specialisation/Sgdf/' + arg] = True
+                urls[arg] = True
+            else:
+                other_args.append(arg)
+
+        super().__init__(*(_chain(urls.keys(), other_args)))
+
+
 class IntranetSGDFBrowser(_LoginBrowser):
-    BASEURL = _environ.get(
-        'INTRANET_BASEURL',
-        'https://intranet.sgdf.fr',
-    )
+    BASEURL = 'https://intranet.sgdf.fr/'
     TIMEOUT = 30.0
 
-    login_page = _URL(
-        r'/Specialisation/Sgdf/Default.aspx',
-        r'/Default.aspx',
-        _LoginPage,
-    )
-    home_page = _URL(
-        r'/Specialisation/Sgdf/Accueil.aspx',
-        r'/Accueil.aspx',
-        _HomePage,
-    )
-    adherent_page = _URL(
-        r'/Specialisation/Sgdf/adherents/ResumeAdherent.aspx',
-        r'/adherents/ResumeAdherent.aspx',
+    MOCK = _MockApp
+
+    login_page = _IntranetSGDFURL(r'Default.aspx', _LoginPage)
+    home_page = _IntranetSGDFURL(r'Accueil.aspx', _HomePage)
+    adherent_page = _IntranetSGDFURL(
+        r'adherents/ResumeAdherent.aspx',
         _AdherentPage,
     )
-    adherent_edit_page = _URL(
-        r'/Specialisation/Sgdf/adherents/ModifierAdherent.aspx',
-        r'/adherents/ModifierAdherent.aspx',
+    adherent_edit_page = _IntranetSGDFURL(
+        r'adherents/ModifierAdherent.aspx',
         _AdherentEditPage,
     )
-    adherent_inscription_search_page = _URL(
-        r'/Specialisation/Sgdf/adherents/InscriptionSaisieNom.aspx',
-        r'/adherents/InscriptionSaisieNom.aspx',
+    adherent_inscription_search_page = _IntranetSGDFURL(
+        r'adherents/InscriptionSaisieNom.aspx',
         _AdherentInscriptionSearchPage,
     )
-    adherent_search_page = _URL(
-        r'/Specialisation/Sgdf/adherents/RechercherAdherent.aspx',
-        r'/adherents/RechercherAdherent.aspx',
+    adherent_search_page = _IntranetSGDFURL(
+        r'adherents/RechercherAdherent.aspx',
         _AdherentSearchPage,
     )
-    adherent_structure_list_page = _URL(
-        r'/Specialisation/Sgdf/adherents/ListeAdherents.aspx',
-        r'/adherents/ListeAdherents.aspx',
+    adherent_structure_list_page = _IntranetSGDFURL(
+        r'adherents/ListeAdherents.aspx',
         _AdherentStructureListPage,
     )
-    person_search_page = _URL(
-        r'/Specialisation/Sgdf/adherents/RechercherPersonne.aspx',
-        r'/adherents/RechercherPersonne.aspx',
+    person_search_page = _IntranetSGDFURL(
+        r'adherents/RechercherPersonne.aspx',
         _PersonSearchPage,
     )
-    person_page = _URL(
-        r'/Specialisation/Sgdf/adherents/ResumePersonne.aspx',
-        r'/adherents/ResumePersonne.aspx',
+    person_page = _IntranetSGDFURL(
+        r'adherents/ResumePersonne.aspx',
         _PersonPage,
     )
-    person_edit_page = _URL(
-        r'/Specialisation/Sgdf/adherents/ModifierPersonne.aspx',
-        r'/adherents/ModifierPersonne.aspx',
+    person_edit_page = _IntranetSGDFURL(
+        r'adherents/ModifierPersonne.aspx',
         _PersonEditPage,
     )
-    secondary_functions_page = _URL(
-        r'/Specialisation/Sgdf/nominations/ListeDelegations.aspx',
-        r'/nominations/ListeDelegations.aspx',
+    secondary_functions_page = _IntranetSGDFURL(
+        r'nominations/ListeDelegations.aspx',
         _SecondaryFunctionsPage,
     )
-    structure_hierarchy_page = _URL(
-        r'/Specialisation/Sgdf/structures/ResumeStructure.aspx',
-        r'/structures/ResumeStructure.aspx',
+    structure_hierarchy_page = _IntranetSGDFURL(
+        r'structures/ResumeStructure.aspx',
         _StructureHierarchyPage,
     )
-    structure_summary_page = _URL(
-        r'/Specialisation/Sgdf/structures/ResumeStructure.aspx',
-        r'/structures/ResumeStructure.aspx',
+    structure_summary_page = _IntranetSGDFURL(
+        r'structures/ResumeStructure.aspx',
         _StructureSummaryPage,
     )
-    structure_specialities_page = _URL(
-        r'/Specialisation/Sgdf/structures/ResumeStructure.aspx',
-        r'/structures/ResumeStructure.aspx',
+    structure_specialities_page = _IntranetSGDFURL(
+        r'structures/ResumeStructure.aspx',
         _StructureSpecialitiesPage,
     )
-    structure_delegations_page = _URL(
-        r'/Specialisation/Sgdf/structures/ResumeStructure.aspx',
-        r'/structures/ResumeStructure.aspx',
+    structure_delegations_page = _IntranetSGDFURL(
+        r'structures/ResumeStructure.aspx',
         _StructureDelegationsPage,
     )
-    structure_contacts_page = _URL(
-        r'/Specialisation/Sgdf/structures/ResumeStructure.aspx',
-        r'/structures/ResumeStructure.aspx',
+    structure_contacts_page = _IntranetSGDFURL(
+        r'structures/ResumeStructure.aspx',
         _StructureContactsPage,
     )
-    structure_bank_accounts_page = _URL(
-        r'/Specialisation/Sgdf/structures/ResumeStructure.aspx',
-        r'/structures/ResumeStructure.aspx',
+    structure_bank_accounts_page = _IntranetSGDFURL(
+        r'structures/ResumeStructure.aspx',
         _StructureBankAccountsPage,
     )
-    structure_markers_page = _URL(
-        r'/Specialisation/Sgdf/structures/ResumeStructure.aspx',
-        r'/structures/ResumeStructure.aspx',
+    structure_markers_page = _IntranetSGDFURL(
+        r'structures/ResumeStructure.aspx',
         _StructureMarkersPage,
     )
-    structure_events_page = _URL(
-        r'/Specialisation/Sgdf/structures/ResumeStructure.aspx',
-        r'/structures/ResumeStructure.aspx',
+    structure_events_page = _IntranetSGDFURL(
+        r'structures/ResumeStructure.aspx',
         _StructureEventsPage,
     )
-    structure_search_page = _URL(
-        r'/Specialisation/Sgdf/Popups/RechercheStructure.aspx',
-        r'/Popups/RechercheStructure.aspx',
+    structure_search_page = _IntranetSGDFURL(
+        r'Popups/RechercheStructure.aspx',
         _StructureSearchPage,
     )
-    structure_completion_page = _URL(
-        r'/Specialisation/Sgdf/WebServices/AutoComplete.asmx/GetStructures',
-        r'/WebServices/AutoComplete.asmx/GetStructures',
+    structure_completion_page = _IntranetSGDFURL(
+        r'WebServices/AutoComplete.asmx/GetStructures',
         _StructureCompletionPage,
     )
-    functions_page = _URL(
-        r'/Specialisation/Sgdf/popups/RechercheFonction.aspx',
-        r'/popups/RechercheFonction.aspx',
+    functions_page = _IntranetSGDFURL(
+        r'popups/RechercheFonction.aspx',
         _FunctionsPage,
     )
-    functions_completion_page = _URL(
-        r'/Specialisation/Sgdf/WebServices/AutoComplete.asmx/GetFonctions',
-        r'/WebServices/AutoComplete.asmx/GetFonctions',
+    functions_completion_page = _IntranetSGDFURL(
+        r'WebServices/AutoComplete.asmx/GetFonctions',
         _FunctionsCompletionPage,
     )
-    team_search_page = _URL(
-        (
-            r'/Specialisation/Sgdf'
-            r'/Formations/RechercherEquipeActionFormation.aspx'
-        ),
-        r'/Formations/RechercherEquipeActionFormation.aspx',
+    team_search_page = _IntranetSGDFURL(
+        r'Formations/RechercherEquipeActionFormation.aspx',
         _TeamSearchPage,
     )
-    bank_account_page = _URL(
-        r'/Specialisation/Sgdf/ComptesBancaires/ResumeCompteBancaire.aspx',
-        r'/ComptesBancaires/ResumeCompteBancaire.aspx',
+    bank_account_page = _IntranetSGDFURL(
+        r'ComptesBancaires/ResumeCompteBancaire.aspx',
         _BankAccountPage,
     )
-    insured_good_search_page = _URL(
-        r'/Specialisation/Sgdf/BiensLocauxAssurances/RechercherBien.aspx',
-        r'/BiensLocauxAssurances/RechercherBien.aspx',
+    insured_good_search_page = _IntranetSGDFURL(
+        r'BiensLocauxAssurances/RechercherBien.aspx',
         _InsuredGoodSearchPage,
     )
-    insured_good_page = _URL(
-        r'/Specialisation/Sgdf/BiensLocauxAssurances/ResumeBien.aspx',
-        r'/BiensLocauxAssurances/ResumeBien.aspx',
+    insured_good_page = _IntranetSGDFURL(
+        r'BiensLocauxAssurances/ResumeBien.aspx',
         _InsuredGoodPage,
     )
-    insured_good_edit_page = _URL(
-        r'/Specialisation/Sgdf/BiensLocauxAssurances/ModifLocal.aspx',
-        r'/BiensLocauxAssurances/ModifLocal.aspx',
+    insured_good_edit_page = _IntranetSGDFURL(
+        r'BiensLocauxAssurances/ModifLocal.aspx',
         _InsuredGoodEditPage,
     )
-    insured_good_create_page = _URL(
-        r'/Specialisation/Sgdf/BiensLocauxAssurances/CreerLocal.aspx',
-        r'/BiensLocauxAssurances/CreerLocal.aspx',
+    insured_good_create_page = _IntranetSGDFURL(
+        r'BiensLocauxAssurances/CreerLocal.aspx',
         _InsuredGoodCreatePage,
     )
-    insured_vehicle_search_page = _URL(
-        r'/Specialisation/Sgdf/BiensLocauxAssurances/RechercheVehicule.aspx',
-        r'/BiensLocauxAssurances/RechercheVehicule.aspx',
+    insured_vehicle_search_page = _IntranetSGDFURL(
+        r'BiensLocauxAssurances/RechercheVehicule.aspx',
         _InsuredVehicleSearchPage,
     )
-    insured_vehicle_page = _URL(
-        r'/Specialisation/Sgdf/BiensLocauxAssurances/CreerVehicule.aspx',
-        r'/BiensLocauxAssurances/CreerVehicule.aspx',
+    insured_vehicle_page = _IntranetSGDFURL(
+        r'BiensLocauxAssurances/CreerVehicule.aspx',
         _InsuredVehiclePage,
     )
-    camp_page = _URL(
-        r'/Specialisation/Sgdf/camps/ConsulterModifierCamp.aspx',
-        r'/camps/ConsulterModifierCamp.aspx',
+    camp_page = _IntranetSGDFURL(
+        r'camps/ConsulterModifierCamp.aspx',
         _CampPage,
     )
-    place_page = _URL(
-        r'/Specialisation/Sgdf/Commun/ResumeLieuActivite.aspx',
-        r'/Commun/ResumeLieuActivite.aspx',
+    place_page = _IntranetSGDFURL(
+        r'Commun/ResumeLieuActivite.aspx',
         _PlacePage,
     )
 
     def __init__(self, config, *args, **kwargs):
-        super(IntranetSGDFBrowser, self).__init__(
+        if config['environment'].get() == 'test':
+            self.BASEURL = 'https://intranet-qualification.sgdf.fr/'
+
+        super().__init__(
             config['code'].get(),
             config['password'].get(),
             *args,

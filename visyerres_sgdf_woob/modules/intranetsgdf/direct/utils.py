@@ -17,13 +17,71 @@
 
 from typing import Optional as _Optional
 
+from visyerres_sgdf_woob.utils import IID as _IID
 from woob.browser.elements import TableElement as _TableElement
+from woob.browser.filters.base import Filter as _Filter, _NO_DEFAULT
 from woob.browser.filters.html import Link as _Link
 from woob.browser.filters.standard import (
     CleanDecimal as _CleanDecimal, Regexp as _Regexp,
 )
 
-__all__ = ['PaginatedTableElement']
+__all__ = ['IIDLink', 'PaginatedTableElement']
+
+
+class IIDLink(_Filter):
+    """ Get an IID from a link.
+
+        Extracts the IID and encodes it as an IID object.
+    """
+
+    def __init__(self, selector, arg: str = 'id', default=_NO_DEFAULT):
+        super().__init__(selector, default=default)
+        self.arg = arg
+
+    def filter(self, data):  # noqa: A003
+        if not data:
+            return self.default_or_raise(ValueError(
+                'expected an URL or HTML element',
+            ))
+
+        link = None
+        raw = None
+
+        if isinstance(data, (str, bytes)):
+            raw = data
+        else:
+            link = data[0]
+
+            if link.tag == 'td':
+                al = link.xpath('./a')
+                if al:
+                    link = al[0]
+                else:
+                    al = link.xpath(
+                        './input[(@type="radio" or @type="checkbox") '
+                        'and (@value!="")]',
+                    )
+                    if al:
+                        raw = al[0].attrib['value']
+
+        if link is not None and raw is None:
+            try:
+                raw = link.attrib['href']
+            except KeyError:
+                raw = link.attrib['action']
+
+        if raw is None:
+            return self._default_or_raise(ValueError(
+                f'expected a valid IID or IID link, got {data!r}',
+            ))
+
+        try:
+            return _IID.fromurl(raw, self.arg)
+        except (TypeError, ValueError) as exc:
+            try:
+                return _IID(raw)
+            except Exception:
+                return self._default_or_raise(exc)
 
 
 class PaginatedTableElement(_TableElement):
@@ -47,7 +105,7 @@ class PaginatedTableElement(_TableElement):
         if not isinstance(self.table_name, str) or not self.table_name:
             raise ValueError('table_name should be set')
 
-        super(PaginatedTableElement, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def table_xpath(self):

@@ -42,7 +42,7 @@ class _IIDField(_Field):
     """
 
     def __init__(self, doc, **kwargs):
-        super(_IIDField, self).__init__(doc, _IID, **kwargs)
+        super().__init__(doc, _IID, **kwargs)
 
     def convert(self, value):
         if isinstance(value, _IID):
@@ -253,7 +253,7 @@ class Structure(_BaseObject):
 
         class Filter(_CleanText):
             def __call__(self, item):
-                full_name = super(Filter, self).__call__(item)
+                full_name = super().__call__(item)
                 full_name_parts = full_name.split('-')
 
                 if len(full_name_parts) > 1:
@@ -265,7 +265,7 @@ class Structure(_BaseObject):
                 item.obj.name = '-'.join(full_name_parts).lstrip()
 
             def filter(self, text):  # noqa: A003
-                return super(Filter, self).filter(text)
+                return super().filter(text)
 
         return Filter(*args, **kwargs)
 
@@ -277,7 +277,7 @@ class Structure(_BaseObject):
 
         class Filter(_CleanText):
             def filter(self, item):  # noqa: A003
-                result = super(Filter, self).filter(item).casefold()
+                result = super().filter(item).casefold()
 
                 if 'autre' in result:
                     return StructureType.AUTRE
@@ -322,7 +322,7 @@ class Structure(_BaseObject):
 
         class Filter(_CleanText):
             def filter(self, item):  # noqa: A003
-                result = super(Filter, self).filter(item).casefold()
+                result = super().filter(item).casefold()
 
                 if 'uvert' in result:
                     return StructureStatus.OPEN
@@ -376,11 +376,11 @@ class Function(_BaseObject):
             __slots__ = ('_is_full',)
 
             def __init__(self, *args, is_full: bool = False, **kwargs):
-                super(Filter, self).__init__(*args, **kwargs)
+                super().__init__(*args, **kwargs)
                 self._is_full = is_full
 
             def __call__(self, item):
-                full_name = super(Filter, self).__call__(item)
+                full_name = super().__call__(item)
 
                 m = _re.match(r'(.+)\s*\(([^\)]+)\)', full_name)
                 if m is not None:
@@ -405,7 +405,7 @@ class Function(_BaseObject):
                         item.obj.name = name.strip()
 
             def filter(self, text):  # noqa: A003
-                return super(Filter, self).filter(text)
+                return super().filter(text)
 
         return Filter(*args, **kwargs)
 
@@ -531,11 +531,11 @@ class Person(_BaseObject):
                 has_title: _Optional[bool] = None,
                 **kwargs,
             ):
-                super(Filter, self).__init__(*args, **kwargs)
+                super().__init__(*args, **kwargs)
                 self._has_title = has_title
 
             def __call__(self, item):
-                full_name = super(Filter, self).__call__(item)
+                full_name = super().__call__(item)
 
                 if _empty(item.obj._has_title) or not _empty(self._has_title):
                     item.obj._has_title = self._has_title
@@ -548,7 +548,7 @@ class Person(_BaseObject):
                 return full_name
 
             def filter(self, text):  # noqa: A003
-                return super(Filter, self).filter(text)
+                return super().filter(text)
 
         return Filter(*args, **kwargs)
 

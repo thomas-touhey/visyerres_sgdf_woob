@@ -516,7 +516,7 @@ class MSHTMLPage(_HTMLPage):
     def build_doc(self, content):
         """ Build structured data. """
 
-        doc = super(MSHTMLPage, self).build_doc(content)
+        doc = super().build_doc(content)
 
         self._scriptmanagerid = None
         self._formid = None

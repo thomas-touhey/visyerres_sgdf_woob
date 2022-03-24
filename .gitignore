@@ -1,5 +1,6 @@
 __pycache__
 /test*.py
+/try*.py
 /*.egg-info
 /dist
 /.spyproject

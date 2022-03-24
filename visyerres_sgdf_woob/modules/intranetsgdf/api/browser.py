@@ -25,7 +25,6 @@
 """
 
 from datetime import datetime as _datetime
-from os import environ as _environ
 from typing import Optional as _Optional
 
 from woob.browser.browsers import (
@@ -61,10 +60,7 @@ class IntranetSGDFAPIBrowser(_LoginBrowser, _StatesMixin):
         'refresh_token',
     )
 
-    BASEURL = _environ.get(
-        'INTRANETAPI_BASEURL',
-        'https://intranetapi.sgdf.fr',
-    )
+    BASEURL = 'https://intranetapi.sgdf.fr/'
 
     client_id: _Optional[str] = None
     audience: _Optional[str] = None
@@ -73,49 +69,7 @@ class IntranetSGDFAPIBrowser(_LoginBrowser, _StatesMixin):
     access_token_expires_at: _Optional[_datetime] = None
     refresh_token: _Optional[str] = None
 
-    token_page = _URL(
-        r'/oauth2/token',
-        _TokenPage,
-    )
-
-    def __init__(self, config, *args, **kwargs):
-        super(IntranetSGDFAPIBrowser, self).__init__(
-            config['code'].get(),
-            config['password'].get(),
-            *args,
-            **kwargs,
-        )
-
-        self.client_id = config['api_client_id'].get()
-        self.audience = config['api_audience'].get()
-
-        for attr in ('client_id', 'audience'):
-            if not getattr(self, attr):
-                raise ValueError(f'Missing configuration param {attr!r}.')
-
-    def build_request(self, url, *args, **kwargs):
-        headers = kwargs.setdefault('headers', {})
-
-        if not self.token_page.match(url):
-            headers['idAppelant'] = self.client_id
-
-            if self.logged:
-                headers['Authorization'] = (
-                    f'{self.access_token_type or "Bearer"} {self.access_token}'
-                )
-
-        return super(IntranetSGDFAPIBrowser, self).build_request(
-            url,
-            *args,
-            **kwargs,
-        )
-
-    @property
-    def logged(self):
-        return self.access_token and (
-            not self.access_token_expires_at
-            or self.access_token_expires_at < _datetime.utcnow()
-        )
+    token_page = _URL(r'oauth2/token', _TokenPage)
 
     @property
     def access_token_expires_at_s(self):
@@ -129,6 +83,45 @@ class IntranetSGDFAPIBrowser(_LoginBrowser, _StatesMixin):
         if isinstance(value, str):
             value = value.fromisoformat()
         self.access_token_expires_at = value
+
+    @property
+    def logged(self):
+        return self.access_token and (
+            not self.access_token_expires_at
+            or self.access_token_expires_at < _datetime.utcnow()
+        )
+
+    def __init__(self, config, *args, **kwargs):
+        if config['environment'].get() == 'test':
+            self.BASEURL = 'https://dev-intranetapi.sgdf.fr/'
+
+        super().__init__(
+            config['code'].get(),
+            config['password'].get(),
+            *args,
+            **kwargs,
+        )
+
+        self.client_id = config['api_client_id'].get()
+        if not self.client_id:
+            raise ValueError('Missing client_id')
+
+        # Some kind of magic value found in the Java client.
+        self.audience = 'b27c656c0e534667b66404aace058215'
+
+    def build_request(self, *args, **kwargs):
+        request = super().build_request(*args, **kwargs)
+
+        if not self.token_page.match(request.url):
+            request.headers['idAppelant'] = self.client_id
+
+            if self.logged:
+                request.headers['Authorization'] = '%s %s' % (
+                    self.access_token_type or "Bearer",
+                    self.access_token,
+                )
+
+        return request
 
     def do_login(self):
         data = {

@@ -47,8 +47,9 @@ from woob.capabilities.base import (
     NotAvailable as _NotAvailable, empty as _empty,
 )
 
-from .elements import PaginatedTableElement as _PaginatedTableElement
-from .filters import IIDLink as _IIDLink
+from .utils import (
+    IIDLink as _IIDLink, PaginatedTableElement as _PaginatedTableElement,
+)
 
 __all__ = [
     'AdherentEditPage', 'AdherentPage', 'HomePage', 'LoggedPage',
@@ -58,14 +59,14 @@ __all__ = [
 
 class _JsonDataPage(_JsonPage):
     def build_doc(self, text):
-        doc = super(_JsonDataPage, self).build_doc(text)
+        doc = super().build_doc(text)
 
         if (
             isinstance(doc, dict)
             and tuple(doc.keys()) == ('d',)
             and isinstance(doc['d'], str)
         ):
-            doc = super(_JsonDataPage, self).build_doc(doc['d'])
+            doc = super().build_doc(doc['d'])
 
         return doc
 
@@ -116,7 +117,7 @@ class LoginPage(_MSHTMLPage):
 
 class LoggedPage(_MSHTMLPage, _LoggedPage):
     def build_doc(self, content):
-        doc = super(LoggedPage, self).build_doc(content)
+        doc = super().build_doc(content)
 
         # We delete the suggestion modal, which seems to
         # parasitate some form submissions.
