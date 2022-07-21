@@ -13,10 +13,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" Utilities for the Vis'Yerres SGDF Woob modules. """
+"""Utilities for the Vis'Yerres SGDF Woob modules."""
 
 from base64 import b64decode as _b64decode, b64encode as _b64encode
-
 from urllib.parse import (
     parse_qs as _parse_qs, quote as _quote, unquote as _unquote,
     urlsplit as _urlsplit,
@@ -26,13 +25,13 @@ __all__ = ['IID']
 
 
 class IID:
-    """ Identifier representing most resources on the intranet.
+    """Identifier representing most resources on the intranet.
 
-        Three formats are managed here:
+    Three formats are managed here:
 
-        * A 16-byte sequence.
-        * The equivalent base64-encoded, represented as 'bytes'.
-        * The equivalent base64-encoded, represented as 'str'.
+    * A 16-byte sequence.
+    * The equivalent base64-encoded, represented as 'bytes'.
+    * The equivalent base64-encoded, represented as 'str'.
     """
 
     __slots__ = ('_val',)
@@ -55,17 +54,14 @@ class IID:
         elif isinstance(value, bytes):
             if len(value) <= 16:
                 # We have an IID directly, let's use it!
-
                 b = value
             else:
                 try:
                     # Maybe the source value is actually the URL-encoded
                     # version of the string, like above?
-
                     b = _b64decode(_unquote(value.decode('ASCII')))
                 except Exception:
                     # Well that's not going to make it.
-
                     raise ValueError(
                         'expected a valid base64 (eventually url encoded) '
                         f'iid, got {value!r}',
@@ -97,13 +93,13 @@ class IID:
         return bytes(self) == bytes(other)
 
     def urlsafe(self):
-        """ Get a URL-safe version of the identifier. """
+        """Get a URL-safe version of the identifier."""
 
         return _quote(_b64encode(self._val))
 
     @classmethod
     def fromurl(cls, url: str, name: str = 'id'):
-        """ Get an IID out of an URL. """
+        """Get an IID out of an URL."""
 
         query_params = _parse_qs(_urlsplit(url).query)
         return cls(query_params.get(name, ('',))[0])

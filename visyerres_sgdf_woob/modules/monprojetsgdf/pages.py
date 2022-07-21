@@ -13,12 +13,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" monprojetsgdf pages definition. """
+"""monprojetsgdf pages definition."""
 
-from visyerres_sgdf_woob.capabilities import (
-    Continent as _Continent, Country as _Country, Delegation as _Delegation,
-    Function as _Function, Person as _Person, Structure as _Structure,
-)
 from woob.browser.elements import (
     DictElement as _DictElement, ItemElement as _ItemElement,
     method as _method,
@@ -30,6 +26,11 @@ from woob.browser.filters.standard import (
 )
 from woob.browser.pages import (
     JsonPage as _JsonPage, LoggedPage as _LoggedPage,
+)
+
+from visyerres_sgdf_woob.capabilities import (
+    Continent as _Continent, Country as _Country, Delegation as _Delegation,
+    Function as _Function, Person as _Person, Structure as _Structure,
 )
 
 __all__ = ['ErrorPage', 'LoginPage', 'ProjectPage', 'ProjectsPage']

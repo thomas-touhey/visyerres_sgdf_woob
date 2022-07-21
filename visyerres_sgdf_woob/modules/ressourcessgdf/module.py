@@ -13,10 +13,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" ressourcessgdf module definition. """
+"""ressourcessgdf module definition."""
+
+from woob.tools.value import ValueBackendPassword as _ValueBackendPassword
 
 from visyerres_sgdf_woob.backend import Module as _Module
-from woob.tools.value import ValueBackendPassword as _ValueBackendPassword
 
 from .browser import RessourcesSGDFBrowser as _RessourcesSGDFBrowser
 

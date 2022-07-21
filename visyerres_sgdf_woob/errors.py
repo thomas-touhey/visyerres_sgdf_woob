@@ -13,7 +13,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" Errors defined by the application. """
+"""Errors defined by the application."""
 
 from typing import Optional as _Optional
 
@@ -29,13 +29,13 @@ __all__ = [
 
 
 class IntranetError(Exception):
-    """ An error has occurred while following a procedure on the intranet. """
+    """An error has occurred while following a procedure on the intranet."""
 
     pass
 
 
 class IntranetLoginError(IntranetError, _BrowserIncorrectPassword):
-    """ An error has occurred while logging in. """
+    """An error has occurred while logging in."""
 
     __slots__ = ('bad_fields',)
 
@@ -52,7 +52,7 @@ class IntranetLoginError(IntranetError, _BrowserIncorrectPassword):
 
 
 class IntranetUserNotFoundError(IntranetLoginError):
-    """ The user was not found while trying to log in. """
+    """The user was not found while trying to log in."""
 
     __slots__ = ('_login',)
 
@@ -67,13 +67,13 @@ class IntranetUserNotFoundError(IntranetLoginError):
 
     @property
     def login(self):
-        """ The login that was attempted. """
+        """The login that was attempted."""
 
         return self._login
 
 
 class IntranetInvalidPasswordError(IntranetLoginError):
-    """ The password was found to be invalid while trying to log in. """
+    """The password was found to be invalid while trying to log in."""
 
     __slots__ = ('_login', '_password')
 
@@ -96,19 +96,19 @@ class IntranetInvalidPasswordError(IntranetLoginError):
 
     @property
     def login(self):
-        """ The login that was attempted. """
+        """The login that was attempted."""
 
         return self._login
 
     @property
     def password(self):
-        """ The password that was attempted. """
+        """The password that was attempted."""
 
         return self._password
 
 
 class IntranetUnauthorizedUserError(IntranetLoginError):
-    """ The user was found to be unauthorized to log in. """
+    """The user was found to be unauthorized to log in."""
 
     __slots__ = ('_login',)
 
@@ -121,7 +121,7 @@ class IntranetUnauthorizedUserError(IntranetLoginError):
 
     @property
     def login(self):
-        """ Get the login that was not allowed to log in. """
+        """Get the login that was not allowed to log in."""
 
         return self._login
 

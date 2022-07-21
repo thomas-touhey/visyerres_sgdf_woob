@@ -13,7 +13,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" monprojetsgdf browser definition. """
+"""monprojetsgdf browser definition."""
 
 from woob.browser.browsers import (
     LoginBrowser as _LoginBrowser, URL as _URL, need_login as _need_login,

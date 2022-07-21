@@ -13,17 +13,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" intranetsgdf module definition.
+"""intranetsgdf module definition.
 
-    This module is used for interacting with the SGDF intranet, a derivative
-    of the Intrassoc solution by Supralog edited and hosted by the same vendor.
-    It is used by all associations to manage both the organization itself
-    through defining people and related statuses, and provides a few
-    ACM (Accueil Collectif de Mineurs) management tools such as an
-    attendance registry, an event organizer, and insurance-related interfaces.
+This module is used for interacting with the SGDF intranet, a derivative
+of the Intrassoc solution by Supralog edited and hosted by the same vendor.
+It is used by all associations to manage both the organization itself
+through defining people and related statuses, and provides a few
+ACM (Accueil Collectif de Mineurs) management tools such as an
+attendance registry, an event organizer, and insurance-related interfaces.
 
-    Although the intranet used to manage camps and declarations, it has moved
-    to monprojet for a few years now.
+Although the intranet used to manage camps and declarations, it has moved
+to monprojet for a few years now.
 """
 
 from .module import IntranetSGDFModule

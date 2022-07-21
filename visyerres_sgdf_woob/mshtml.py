@@ -14,35 +14,36 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" HTML pages with support for Microsoft Ajax.
+"""HTML pages with support for Microsoft Ajax.
 
-    This kind of pages is mainly used with websites built using the
-    ASP.NET framework, such as the SGDF intranet.
+This kind of pages is mainly used with websites built using the
+ASP.NET framework, such as the SGDF intranet.
 """
 
 import os.path as _path
-
 import re as _re
 from io import StringIO as _StringIO
 from os import environ as _environ, listdir as _listdir
+from urllib.parse import unquote as _unquote, urljoin as _urljoin
 
 from lxml.etree import (
     Element as _Element, XMLSyntaxError as _XMLSyntaxError,
     tostring as _html_to_str,
 )
 from lxml.html import HTMLParser as _HTMLParser, parse as _parse_html
+
 from requests import Request as _Request
-from weboob.browser.pages import HTMLPage as _HTMLPage
-from weboob.exceptions import (
+
+from woob.browser.pages import HTMLPage as _HTMLPage
+from woob.exceptions import (
     BrowserHTTPError as _BrowserHTTPError, BrowserRedirect as _BrowserRedirect,
 )
-from weboob.tools.compat import unquote as _unquote, urljoin as _urljoin
 
 __all__ = ['MSHTMLPage']
 
 
 def _listrepr(x):
-    """ Represent a list in a short fashion, for easy representation. """
+    """Represent a list in a short fashion, for easy representation."""
 
     try:
         len(x)
@@ -53,7 +54,7 @@ def _listrepr(x):
 
 
 class _MicrosoftAjaxResponseParsingError(Exception):
-    """ A Microsoft Ajax call has resulted in an error. """
+    """A Microsoft Ajax call has resulted in an error."""
 
     __slots__ = ('_column', '_description')
 
@@ -66,10 +67,10 @@ class _MicrosoftAjaxResponseParsingError(Exception):
 
 
 class MicrosoftAjaxResponse:
-    """ Response to a Microsoft Ajax call.
+    """Response to a Microsoft Ajax call.
 
-        Re-implements the same concepts as ``_parseDelta`` in
-        the reference implementation.
+    Re-implements the same concepts as ``_parseDelta`` in
+    the reference implementation.
     """
 
     __slots__ = (
@@ -157,49 +158,49 @@ class MicrosoftAjaxResponse:
 
     @property
     def version(self):
-        """ ASP.NET server-side version. """
+        """ASP.NET server-side version."""
 
         return self._version
 
     @property
     def version4(self):
-        """ Get if ASP.NET server-side version is 4 or above. """
+        """Get if ASP.NET server-side version is 4 or above."""
 
         return self._version is not None and self._version >= 4
 
     @property
     def errorCode(self):
-        """ Get the error code, if any. """
+        """Get the error code, if any."""
 
         return self._error[0] if self._error else None
 
     @property
     def errorMessage(self):
-        """ Get the error message, if any. """
+        """Get the error message, if any."""
 
         return self._error[1] if self._error else None
 
     @property
     def redirectUrl(self):
-        """ Get the redirect URL, if any. """
+        """Get the redirect URL, if any."""
 
         return self._redirectUrl
 
     @property
     def updatePanelNodes(self):
-        """ Update panel nodes. """
+        """Update panel nodes."""
 
         return self._updatePanelNodes
 
     @property
     def hiddenFieldNodes(self):
-        """ Hidden field nodes. """
+        """Hidden field nodes."""
 
         return self._hiddenFieldNodes
 
     @property
     def scriptBlockNodes(self):
-        """ Script block nodes. """
+        """Script block nodes."""
 
         return self._scriptBlockNodes
 
@@ -209,7 +210,7 @@ class MicrosoftAjaxResponse:
 
     @classmethod
     def fromstream(cls, stream):
-        """ Get a Microsoft Ajax response from a text stream. """
+        """Get a Microsoft Ajax response from a text stream."""
 
         version = None
         redirectUrl = None
@@ -237,9 +238,9 @@ class MicrosoftAjaxResponse:
         # Utilitaires.
 
         def parseinvariantnumber(x):
-            """ Equivalent of ``Number.parseInvariant``.
+            """Equivalent of ``Number.parseInvariant``.
 
-                Implemented here for compatibility reasons.
+            Implemented here for compatibility reasons.
             """
 
             x = x.strip()
@@ -267,7 +268,6 @@ class MicrosoftAjaxResponse:
         # Note that this algorithm is greedy; if the caller has to
         # read something after this response, it must provide us with
         # a limited input stream.
-
         buf = ''
         column = 1
 
@@ -291,7 +291,6 @@ class MicrosoftAjaxResponse:
                     # There might be an EOL at the end of the stream,
                     # we should ignore it. This case also manages an
                     # empty end of stream (buf == ''), not anomalous.
-
                     if all(c in ('\n', '\r') for c in buf):
                         break
                     raise _MicrosoftAjaxResponseParsingError(
@@ -307,7 +306,6 @@ class MicrosoftAjaxResponse:
             # Note that the reference implementation requires the final
             # '|' even on the last node, whereas we can just have an end
             # of file here.
-
             clength, ctype, cname = buf[:lastoffset].split('|')
             type_column = column + buf.find('|') + 1
 
@@ -349,7 +347,6 @@ class MicrosoftAjaxResponse:
             column += clength + 1
 
             # We add the field where it needs to be.
-
             if ctype == '#':
                 version = float(content)
             elif ctype == 'pageRedirect':
@@ -357,7 +354,6 @@ class MicrosoftAjaxResponse:
                 # this URL is read; to emulate this behaviour, we do not
                 # replace the existing redirection URL if already
                 # set.
-
                 if redirectUrl is None:
                     if version is not None and version >= 4:
                         content = _unquote(content)
@@ -442,26 +438,26 @@ class MicrosoftAjaxResponse:
 
 
 class MSHTMLPage(_HTMLPage):
-    """ Represents an HTML page as used on the SGDF intranet.
+    """Represents an HTML page as used on the SGDF intranet.
 
-        All such pages act as a global form on which operations are executed.
+    All such pages act as a global form on which operations are executed.
     """
 
     __slots__ = ('_scriptmanagerid', '_formid')
 
     def __setitem__(self, key, value):
-        """ Sets the control with the given name at the given value.
+        """Sets the control with the given name at the given value.
 
-            This method behaves differently depending on the control type:
+        This method behaves differently depending on the control type:
 
-            * If the control is a simple text input, we edit the ``value``
-              attribute.
-            * If the control is a checkbox or a radio button, we check it
-              by defining the ``checked`` attribute.
-            * If the control is a combobox (``<select>``), we remove
-              ``selected`` from all attributes then we check the option
-              whose ``value`` attribute is given; if such an option isn't
-              found, we add it to the list.
+        * If the control is a simple text input, we edit the ``value``
+          attribute.
+        * If the control is a checkbox or a radio button, we check it
+          by defining the ``checked`` attribute.
+        * If the control is a combobox (``<select>``), we remove
+          ``selected`` from all attributes then we check the option
+          whose ``value`` attribute is given; if such an option isn't
+          found, we add it to the list.
         """
 
         if not isinstance(key, str):
@@ -506,7 +502,7 @@ class MSHTMLPage(_HTMLPage):
 
     @property
     def form(self):
-        """ Get the form element. """
+        """Get the form element."""
 
         if self._formid is not None:
             return self.doc.xpath('//form[@id=$id_]', id_=self._formid)[0]
@@ -514,7 +510,7 @@ class MSHTMLPage(_HTMLPage):
         return self.doc.xpath('//form')[0]
 
     def build_doc(self, content):
-        """ Build structured data. """
+        """Build structured data."""
 
         doc = super().build_doc(content)
 
@@ -547,12 +543,12 @@ class MSHTMLPage(_HTMLPage):
         return doc
 
     def xpath(self, *args, **kwargs):
-        """ Get the elements through the xpath relative to the document. """
+        """Get the elements through the xpath relative to the document."""
 
         return self.doc.xpath(*args, **kwargs)
 
     def request(self, target, argument='', button_id=''):
-        """ Make the Request out of the current page. """
+        """Make the Request out of the current page."""
 
         form = self.form
 
@@ -563,7 +559,6 @@ class MSHTMLPage(_HTMLPage):
         method = form.attrib.get('method', 'POST')
 
         # Explore form tags in search for form data.
-
         fields = {}
         files = {}
 
@@ -627,17 +622,12 @@ class MSHTMLPage(_HTMLPage):
             fields['_eo_obj_inst'] = ''
 
         # Prepare the request.
-
-        return _Request(
-            url=url,
-            method=method,
-            data=fields,
-        )
+        return _Request(url=url, method=method, data=fields)
 
     def postback(self, target='', argument='', scriptmanager=None):
-        """ Makes an AJAX call on the page.
+        """Makes an AJAX call on the page.
 
-            Updates the document depending on the answer.
+        Updates the document depending on the answer.
         """
 
         browser = self.browser
@@ -682,7 +672,6 @@ class MSHTMLPage(_HTMLPage):
                 continue
             else:
                 # Get the <body> tag.
-
                 fragment = fragment.getroot()[0]
 
             for child in element:
@@ -696,7 +685,6 @@ class MSHTMLPage(_HTMLPage):
             self[name] = content
 
         # We ought to save the response if necessary for quick debugging.
-
         if (
             browser.save_response in browser.session.hooks['response']
             and _environ.get('WOOB_USE_OBSOLETE_RESPONSES_DIR') == '1'
@@ -712,7 +700,7 @@ class MSHTMLPage(_HTMLPage):
             browser.logger.info('Result saved to %s' % result_path)
 
     def submit(self, target='', argument='', button_id=None):
-        """ Réalise un appel POST sur la page en soumettant le formulaire. """
+        """Réalise un appel POST sur la page en soumettant le formulaire."""
 
         return self.browser.location(self.request(
             target,

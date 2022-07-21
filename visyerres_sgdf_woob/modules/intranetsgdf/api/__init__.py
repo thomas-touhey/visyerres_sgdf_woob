@@ -13,7 +13,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" intranetsgdf API browser declaration. """
+"""intranetsgdf API browser declaration."""
 
 from .browser import IntranetSGDFAPIBrowser
 

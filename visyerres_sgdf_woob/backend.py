@@ -13,7 +13,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" Module definition. """
+"""Module definition."""
 
 from copy import copy as _copy
 
@@ -47,13 +47,12 @@ class _ModuleMeta(type):
 
 
 class Module(_Module, metaclass=_ModuleMeta):
-    """
-    Base class for modules within visyerres_sgdf_woob.
+    """Base class for modules within visyerres_sgdf_woob.
 
     TODO: Manage the mock browser.
     """
 
-    VERSION = '3.0'
+    VERSION = '3.1'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

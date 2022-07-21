@@ -13,12 +13,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" ressourcessgdf module definition.
+"""ressourcessgdf module definition.
 
-    This module is used for interacting with ComptaWeb, accessible at
-    https://comptaweb.sgdf.fr, the web application used by treasurers
-    amongst the organization for matching transactions with bank account
-    statements, and establishing budgets.
+This module is used for interacting with ComptaWeb, accessible at
+https://comptaweb.sgdf.fr, the web application used by treasurers
+amongst the organization for matching transactions with bank account
+statements, and establishing budgets.
 """
 
 from .module import RessourcesSGDFModule

@@ -13,7 +13,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" intranetsgdf_api pages definition. """
+"""intranetsgdf_api pages definition."""
 
 from datetime import datetime as _datetime, timedelta as _timedelta
 

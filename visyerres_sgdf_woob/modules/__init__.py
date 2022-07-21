@@ -13,6 +13,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" woob modules for visyerres_sgdf. """
+"""woob modules for visyerres_sgdf."""
 
 # End of file.

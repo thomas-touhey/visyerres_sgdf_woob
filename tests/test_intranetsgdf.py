@@ -13,18 +13,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" Test the backend based on what we know. """
+"""Test the backend based on what we know."""
 
-from contextlib import contextmanager
 import logging
+from contextlib import contextmanager
 
 import pytest
+
+from woob.core.ouiboube import WebNip
+from woob.exceptions import BrowserIncorrectPassword
+
 from visyerres_sgdf_woob import MODULES_PATH
 from visyerres_sgdf_woob.mocker import RequestsMock
 from visyerres_sgdf_woob.modules.intranetsgdf.direct.mock import (
     app as WSGIApp,
 )
-from woob.core.ouiboube import WebNip
 
 
 @contextmanager
@@ -37,13 +40,15 @@ def get_woob():
 
 
 class TestIntranetSGDF:
+    """Test the intranetsgdf module against its mock."""
+
     @pytest.fixture(autouse=True)
     def set_log_level_to_debug(self, caplog):
         caplog.set_level(logging.DEBUG)
 
     @pytest.fixture(autouse=True)
     def intranet_mock(self):
-        """ Mock the intranet using the mock WSGI application. """
+        """Mock the intranet using the mock WSGI application."""
 
         with RequestsMock() as responses:
             responses.add_wsgi('https://intranet.sgdf.fr', WSGIApp)
@@ -52,7 +57,7 @@ class TestIntranetSGDF:
 
     @pytest.fixture
     def intranet(self):
-        """ Intranet associated for a valid user with a valid password. """
+        """Intranet associated for a valid user with a valid password."""
 
         with get_woob() as woob:
             yield woob.build_backend('intranetsgdf', params={
@@ -62,7 +67,7 @@ class TestIntranetSGDF:
 
     @pytest.fixture
     def intranet_invalid_password(self):
-        """ Intranet associated for a valid user with an invalid password. """
+        """Intranet associated for a valid user with an invalid password."""
 
         with get_woob() as woob:
             yield woob.build_backend('intranetsgdf', params={
@@ -72,7 +77,7 @@ class TestIntranetSGDF:
 
     @pytest.fixture
     def intranet_unauthorized_user(self):
-        """ Intranet associated with a forbidden user. """
+        """Intranet associated with a forbidden user."""
 
         with get_woob() as woob:
             yield woob.build_backend('intranetsgdf', params={

@@ -13,18 +13,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" intranetsgdf pages definition. """
+"""intranetsgdf pages definition."""
 
 import re as _re
-
 from datetime import date as _date
 
-from visyerres_sgdf_woob.capabilities import (
-    Address as _Address, BankAccount as _BankAccount,
-    BirthPlace as _BirthPlace, Country as _Country, Delegation as _Delegation,
-    Function as _Function, Person as _Person, Structure as _Structure,
-)
-from visyerres_sgdf_woob.mshtml import MSHTMLPage as _MSHTMLPage
 from woob.browser.elements import (
     DictElement as _DictElement, ItemElement as _ItemElement,
     TableElement as _TableElement, method as _method,
@@ -46,6 +39,13 @@ from woob.browser.pages import (
 from woob.capabilities.base import (
     NotAvailable as _NotAvailable, empty as _empty,
 )
+
+from visyerres_sgdf_woob.capabilities import (
+    Address as _Address, BankAccount as _BankAccount,
+    BirthPlace as _BirthPlace, Country as _Country, Delegation as _Delegation,
+    Function as _Function, Person as _Person, Structure as _Structure,
+)
+from visyerres_sgdf_woob.mshtml import MSHTMLPage as _MSHTMLPage
 
 from .utils import (
     IIDLink as _IIDLink, PaginatedTableElement as _PaginatedTableElement,
@@ -87,7 +87,7 @@ class LoginPage(_MSHTMLPage):
         )
 
     def request_new_password(self, username: str):
-        """ Request a new password for the given username. """
+        """Request a new password for the given username."""
 
         self['_tbIdentifiant'] = username
         self.submit(target='Envoyer', button_id='Envoyer')
@@ -98,7 +98,7 @@ class LoginPage(_MSHTMLPage):
         first_name: str,
         birth_date: _date,
     ):
-        """ Request our adherent code by e-mail. """
+        """Request our adherent code by e-mail."""
 
         self['_tbNom'] = last_name
         self['_tbPrenom'] = first_name
@@ -121,7 +121,6 @@ class LoggedPage(_MSHTMLPage, _LoggedPage):
 
         # We delete the suggestion modal, which seems to
         # parasitate some form submissions.
-
         modal = doc.xpath('//div[@id="modalSuggestionAvisUtilisateur"]')
         if modal:
             modal = modal[0]
@@ -202,7 +201,6 @@ class AdherentPage(LoggedPage):
 
         def obj_delegations(self):
             # TODO: secondary delegations
-
             return [self.page.get_delegation()]
 
         def obj_status(self):
@@ -816,7 +814,6 @@ class AdherentSearchPage(LoggedPage):
         #
         # * We select the structure 'Toutes', which produces a postback.
         # * We run the search.
-
         self['ctl00$MainContent$_recherche$_selecteur$_ddStructure'] = '0'
         self.postback(
             target='ctl00$MainContent$_recherche$_selecteur$_ddStructure',
@@ -1115,7 +1112,6 @@ class SecondaryFunctionsPage(LoggedPage):
     def search_delegations(self):
         # If there is currently a selected structure for the query,
         # we deselect it.
-
         delete_button = _XPath(
             '//a[@id="ctl00_MainContent__btnStructure__btnSupprimer"]',
             default=None,
@@ -1131,7 +1127,6 @@ class SecondaryFunctionsPage(LoggedPage):
             )
 
         # Search and iterate over all listed secondary functions.
-
         self.postback(
             target='ctl00$MainContent$_btnRechercher',
             scriptmanager=(

@@ -13,27 +13,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" intranetsgdf directaccess browser definition.
+"""intranetsgdf directaccess browser definition.
 
-    This module is used for interacting with the SGDF intranet directly,
-    which is still useful for functions either not supported by the API,
-    or when the API is not accessible by the client.
+This module is used for interacting with the SGDF intranet directly,
+which is still useful for functions either not supported by the API,
+or when the API is not accessible by the client.
 """
 
 from collections import OrderedDict as _OrderedDict
 from datetime import date as _date
 from itertools import chain as _chain
-
 from urllib.parse import urlparse as _urlparse
-from visyerres_sgdf_woob.capabilities import (
-    BankAccount as _BankAccount, Person as _Person, Structure as _Structure,
-)
-from visyerres_sgdf_woob.errors import (
-    IntranetInvalidPasswordError as _IntranetInvalidPasswordError,
-    IntranetLoginError as _IntranetLoginError,
-    IntranetUnauthorizedUserError as _IntranetUnauthorizedUserError,
-    IntranetUserNotFoundError as _IntranetUserNotFoundError,
-)
+
 from woob.browser.browsers import (
     LoginBrowser as _LoginBrowser, URL as _URL,
     need_login as _need_login,
@@ -44,6 +35,16 @@ from woob.exceptions import (
     BrowserHTTPNotFound as _BrowserHTTPNotFound,
     BrowserIncorrectPassword as _BrowserIncorrectPassword,
     BrowserUnavailable as _BrowserUnavailable,
+)
+
+from visyerres_sgdf_woob.capabilities import (
+    BankAccount as _BankAccount, Person as _Person, Structure as _Structure,
+)
+from visyerres_sgdf_woob.errors import (
+    IntranetInvalidPasswordError as _IntranetInvalidPasswordError,
+    IntranetLoginError as _IntranetLoginError,
+    IntranetUnauthorizedUserError as _IntranetUnauthorizedUserError,
+    IntranetUserNotFoundError as _IntranetUserNotFoundError,
 )
 
 from .mock import app as _MockApp
@@ -266,7 +267,6 @@ class IntranetSGDFBrowser(_LoginBrowser):
 
                 # We want to avoid getting to the pages to yield
                 # the errors they contain, which is always the same.
-
                 if path.endswith('/erreurs/erreur.aspx'):
                     raise _BrowserUnavailable(
                         'Oups ! Une erreur est survenue.',
@@ -295,7 +295,6 @@ class IntranetSGDFBrowser(_LoginBrowser):
         if not error:
             # No error message and no redirection? It seems that the
             # server has completely ignored us.
-
             raise _BrowserUnavailable()
         elif 'dentifiant invalide' in error:
             raise _IntranetUserNotFoundError(
@@ -483,7 +482,6 @@ class IntranetSGDFBrowser(_LoginBrowser):
             #
             # However, we still need to go to the page before making the
             # autocomplete call since, otherwise, it returns an empty result.
-
             self.team_search_page.go()
         else:
             try:
@@ -493,7 +491,6 @@ class IntranetSGDFBrowser(_LoginBrowser):
             except _BrowserUnavailable:
                 # When given an invalid IID, the page produces an error.
                 # So we just think it's not found.
-
                 raise _BrowserHTTPNotFound()
 
             self.page.get_structure(obj)
@@ -517,7 +514,6 @@ class IntranetSGDFBrowser(_LoginBrowser):
         # We chose the second one since the first one doesn't yield
         # additional data, only identifiers (which we don't have but don't
         # actually need for most actions) and labels.
-
         self.functions_page.go(params={
             'dummy': '1',
             'tag': 'fonctionsConcernees',

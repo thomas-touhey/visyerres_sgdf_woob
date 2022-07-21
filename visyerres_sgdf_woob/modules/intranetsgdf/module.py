@@ -13,9 +13,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" Module definition for intranetsgdf. """
+"""Module definition for intranetsgdf."""
 
 from datetime import date as _date
+
+from woob.tools.value import (
+    Value as _Value, ValueBackendPassword as _ValueBackendPassword,
+    ValueBool as _ValueBool,
+)
 
 from visyerres_sgdf_woob.backend import Module as _Module
 from visyerres_sgdf_woob.capabilities import (
@@ -23,10 +28,6 @@ from visyerres_sgdf_woob.capabilities import (
     Structure as _Structure,
 )
 from visyerres_sgdf_woob.utils import IID as _IID
-from woob.tools.value import (
-    Value as _Value, ValueBackendPassword as _ValueBackendPassword,
-    ValueBool as _ValueBool,
-)
 
 from .api import IntranetSGDFAPIBrowser as _IntranetSGDFAPIBrowser
 from .direct import IntranetSGDFBrowser as _IntranetSGDFBrowser
@@ -152,9 +153,7 @@ class IntranetSGDFModule(_Module):
         )
 
     def request_new_password(self, code: str):
-        return self.direct_browser.request_new_password(
-            code,
-        )
+        return self.direct_browser.request_new_password(code)
 
     def iter_people(self):
         return self.direct_browser.iter_people()

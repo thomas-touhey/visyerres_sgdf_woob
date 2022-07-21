@@ -13,9 +13,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" Tools for mocking a website for unit testing without actual access.
+"""Tools for mocking a website for unit testing without actual access.
 
-    The website can be defined using a WSGI application implementing PEP 3333.
+The website can be defined using a WSGI application implementing PEP 3333.
 """
 
 from http.client import HTTPResponse as _HTTPResponse
@@ -34,7 +34,7 @@ __all__ = ['RequestsMock', 'WSGIResponse']
 
 
 class WSGIHandler(_SimpleWSGIHandler):
-    """ Represents a WSGI request handler. """
+    """Represents a WSGI request handler."""
 
     __slots__ = ('_request',)
 
@@ -55,12 +55,11 @@ class WSGIHandler(_SimpleWSGIHandler):
         )
 
     def get_environ(self):
-        """ Get the CGI environment for the given request. """
+        """Get the CGI environment for the given request."""
 
         request = self._request
 
         # Get the base URL information.
-
         parsed_url = _urlparse(request.url)
         scheme, netloc = parsed_url.scheme, parsed_url.netloc
         scheme, netloc = scheme.casefold(), netloc.casefold()
@@ -108,7 +107,7 @@ class WSGIHandler(_SimpleWSGIHandler):
 
 
 class WSGIResponse(_BaseResponse):
-    """ Represents a WSGI response for the RequestsMocker registry. """
+    """Represents a WSGI response for the RequestsMocker registry."""
 
     __slots__ = ('_appclass', '_scheme', '_netloc')
 
@@ -127,7 +126,7 @@ class WSGIResponse(_BaseResponse):
         self.call_count += 1
 
     def matches(self, request):
-        """ Check if the current response should match the request. """
+        """Check if the current response should match the request."""
 
         scheme, netloc = self._get_scheme_and_netloc(request.url)
         if (scheme, netloc) != (self._scheme, self._netloc):
@@ -136,18 +135,18 @@ class WSGIResponse(_BaseResponse):
         return True, ''
 
     def get_response(self, request):
-        """ Get the response associated with the request. """
+        """Get the response associated with the request."""
 
         handler = WSGIHandler(request)
         handler.run(self._appclass)
         handler.stdout.seek(0)
 
         class Socket:
-            """ Some kind of socket override.
+            """Some kind of socket override.
 
-                Not a very elegant solution, but HTTPResponse expects
-                a socket instead of a file stream directly;
-                this is the solution I've settled with.
+            Not a very elegant solution, but HTTPResponse expects
+            a socket instead of a file stream directly;
+            this is the solution I've settled with.
             """
 
             def makefile(*args, **kwargs):
@@ -160,7 +159,7 @@ class WSGIResponse(_BaseResponse):
 
     @staticmethod
     def _get_scheme_and_netloc(url: str):
-        """ Get the scheme and net location of the given URL. """
+        """Get the scheme and net location of the given URL."""
 
         parsed_url = _urlparse(url)
         scheme, netloc = parsed_url.scheme, parsed_url.netloc
@@ -169,7 +168,6 @@ class WSGIResponse(_BaseResponse):
         # netloc can contain the port number, e.g. 'example.org:443'.
         # If the given port number is the standard port for the scheme,
         # we ought to remove it.
-
         netloc_components = parsed_url.netloc.split(':')
         if len(netloc_components) == 2:
             new_netloc, port = netloc_components
@@ -183,34 +181,34 @@ class WSGIResponse(_BaseResponse):
 
 
 class RequestsMock(_RequestsMock):
-    """ Requests mocker. """
+    """Requests mocker."""
 
     def add_wsgi(self, url: str, app: object):
-        """ Add a WSGI application implementing PEP 3333 to the mocker.
+        """Add a WSGI application implementing PEP 3333 to the mocker.
 
-            This is mostly useful when mocking complex applications, or
-            applications with states.
+        This is mostly useful when mocking complex applications, or
+        applications with states.
 
-            An example of this using Flask is the following:
+        An example of this using Flask is the following:
 
-            .. code-block:: python
+        .. code-block:: python
 
-                from flask import Flask
-                import requests
-                from visyerres_sgdf_woob.mocker import RequestsMocker
+            from flask import Flask
+            import requests
+            from visyerres_sgdf_woob.mocker import RequestsMocker
 
-                app = Flask()
+            app = Flask()
 
-                @app.route('/hello/world')
-                def hello_world():
-                    return 'hello, world'
+            @app.route('/hello/world')
+            def hello_world():
+                return 'hello, world'
 
-                with RequestsMocker() as responses:
-                    responses.add_wsgi('https://example.org', app)
+            with RequestsMocker() as responses:
+                responses.add_wsgi('https://example.org', app)
 
-                    resp = requests.get('https://example.org/hello/world')
-                    print('status code:', resp.status_code)
-                    print('text:', resp.text)
+                resp = requests.get('https://example.org/hello/world')
+                print('status code:', resp.status_code)
+                print('text:', resp.text)
         """
 
         self.add(WSGIResponse(url, app))

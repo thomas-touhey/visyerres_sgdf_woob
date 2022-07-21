@@ -13,13 +13,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" WSGI application mocking the intranet. """
+"""WSGI application mocking the intranet."""
 
 from urllib.parse import urlencode as _urlencode, urlparse as _urlparse
 
 from flask import (
-    Flask as _Flask, render_template as _template,
-    redirect as _redirect, request as _r,
+    Flask as _Flask, redirect as _redirect, render_template as _template,
+    request as _r,
 )
 from flask.wrappers import Request as _BaseRequest
 
@@ -28,12 +28,11 @@ __all__ = ['app']
 
 class GenericException(Exception):
     # Raised when the intranet does not give any details on what went wrong.
-
     pass
 
 
 class _Request(_BaseRequest):
-    """ Base request class for intranetsgdf mock. """
+    """Base request class for intranetsgdf mock."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -52,7 +51,6 @@ class _Request(_BaseRequest):
         #       trigger an error since there is a redirect from
         #       / to /Default.aspx but not from /Specialisation/Sgdf/ to
         #       /Specialisation/Sgdf/Default.aspx, so we need to keep it.
-
         if (
             path.startswith('/specialisation/sgdf')
             and path not in (
@@ -113,7 +111,7 @@ def redirect_to_login():
 
 @app.route('/default.aspx', methods=['GET', 'POST'])
 def default():
-    """ Login and forgot password options. """
+    """Login and forgot password options."""
 
     if _r.method == 'GET':
         return _template('Default.html')

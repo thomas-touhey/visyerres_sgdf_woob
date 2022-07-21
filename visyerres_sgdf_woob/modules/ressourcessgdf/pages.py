@@ -13,7 +13,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" ressourcessgdf pages definition. """
+"""ressourcessgdf pages definition."""
 
 from woob.browser.filters.standard import CleanText as _CleanText
 from woob.browser.pages import HTMLPage as _HTMLPage

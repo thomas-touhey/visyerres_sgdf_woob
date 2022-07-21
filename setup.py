@@ -13,9 +13,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" Setup script for the visyerres_sgdf_woob Python package and script. """
+"""Setup script for the visyerres_sgdf_woob Python package and script."""
 
 import os.path as _path
+
 from setuptools import setup as _setup
 
 requirements = set()

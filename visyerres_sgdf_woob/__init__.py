@@ -13,7 +13,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" woob compatibility. """
+"""Woob modules for web platforms from Scouts et Guides de France.."""
 
 from os.path import dirname as _dirname, join as _joinpaths
 

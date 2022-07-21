@@ -13,15 +13,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" intranetsgdf API browser definition.
+"""intranetsgdf API browser definition.
 
-    This browser interacts with the intranet API, which renders some intranet
-    data (although not all of it) accessible in a programmatic way for other
-    applications to access.
+This browser interacts with the intranet API, which renders some intranet
+data (although not all of it) accessible in a programmatic way for other
+applications to access.
 
-    It however requires a client_id / client_secret pair, which are provided
-    by the SGDF SI (Système d'Information) service, which haven't answered
-    as of Jan. 2022 to my requests to get one for Vis'Yerres.
+It however requires a client_id / client_secret pair, which are provided
+by the SGDF SI (Système d'Information) service, which haven't answered
+as of Jan. 2022 to my requests to get one for Vis'Yerres.
 """
 
 from datetime import datetime as _datetime
@@ -38,8 +38,7 @@ __all__ = ['IntranetSGDFAPIBrowser']
 
 
 class IntranetSGDFAPIBrowser(_LoginBrowser, _StatesMixin):
-    """
-    Browser for the intranet API.
+    """Browser for the intranet API.
 
     This class is inspired from the following class in the Java
     client implementation:

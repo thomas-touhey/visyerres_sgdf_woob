@@ -13,13 +13,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" Module providing the module's version.
+"""Module providing the module's version.
 
-    This module uses calendar-based versioning with a YYYYMMDD version scheme.
-    This is due to the fact that functionalities provided here are highly
-    dependent on the state of the online tools it uses, so the versioning
-    scheme reflects the importance of the current date in the module's
-    working state.
+This module uses calendar-based versioning with a YYYYMMDD version scheme.
+This is due to the fact that functionalities provided here are highly
+dependent on the state of the online tools it uses, so the versioning
+scheme reflects the importance of the current date in the module's
+working state.
 """
 
 __all__ = ['version']

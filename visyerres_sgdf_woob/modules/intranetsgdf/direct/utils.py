@@ -13,11 +13,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" Useful elements for the intranetsgdf woob module. """
+"""Useful elements for the intranetsgdf woob module."""
 
 from typing import Optional as _Optional
 
-from visyerres_sgdf_woob.utils import IID as _IID
 from woob.browser.elements import TableElement as _TableElement
 from woob.browser.filters.base import Filter as _Filter, _NO_DEFAULT
 from woob.browser.filters.html import Link as _Link
@@ -25,13 +24,15 @@ from woob.browser.filters.standard import (
     CleanDecimal as _CleanDecimal, Regexp as _Regexp,
 )
 
+from visyerres_sgdf_woob.utils import IID as _IID
+
 __all__ = ['IIDLink', 'PaginatedTableElement']
 
 
 class IIDLink(_Filter):
-    """ Get an IID from a link.
+    """Get an IID from a link.
 
-        Extracts the IID and encodes it as an IID object.
+    Extracts the IID and encodes it as an IID object.
     """
 
     def __init__(self, selector, arg: str = 'id', default=_NO_DEFAULT):
@@ -85,16 +86,15 @@ class IIDLink(_Filter):
 
 
 class PaginatedTableElement(_TableElement):
-    """ Table element with pagination as the intranet likes to make it.
+    """Table element with pagination as the intranet likes to make it.
 
-        :data table_name str: Name of the table with '$' in it.
-                              Can usually be found in the page
-                              Javascript links.
-        :data is_postback bool: Whether we should use postback to access new
-                                pages, or a simple submit.
-        :data max_page int: Maximum page to reach, mainly used for debugging
-                            purposes (e.g. debugging a page with lots of
-                            elements).
+    :data table_name str: Name of the table with '$' in it.
+                          Can usually be found in the page
+                          Javascript links.
+    :data is_postback bool: Whether we should use postback to access new
+                            pages, or a simple submit.
+    :data max_page int: Maximum page to reach, mainly used for debugging
+                        purposes (e.g. debugging a page with lots of elements).
     """
 
     table_name: str = None

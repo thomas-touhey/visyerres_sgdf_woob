@@ -13,14 +13,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 # *****************************************************************************
-""" Define capabilities. """
+"""Define capabilities."""
 
 import re as _re
-
 from datetime import date as _date, datetime as _datetime
 from typing import Optional as _Optional
 
-from visyerres_sgdf_woob.utils import IID as _IID
 from woob.browser.filters.standard import CleanText as _CleanText
 from woob.capabilities.base import (
     BaseObject as _BaseObject, BoolField as _BoolField, Enum as _Enum,
@@ -28,18 +26,17 @@ from woob.capabilities.base import (
     NotAvailable as _NotAvailable, StringField as _StringField,
     empty as _empty,
 )
-from woob.tools.compat import unicode as _unicode
 
-__all__ = [
+from visyerres_sgdf_woob.utils import IID as _IID
+
+__all__ = (
     'Continent', 'Country', 'Function', 'Structure', 'StructureStatus',
     'StructureType',
-]
+)
 
 
 class _IIDField(_Field):
-    """
-    A field which accepts intranet identifiers.
-    """
+    """A field which accepts intranet identifiers."""
 
     def __init__(self, doc, **kwargs):
         super().__init__(doc, _IID, **kwargs)
@@ -53,9 +50,7 @@ class _IIDField(_Field):
 
 
 class Continent(_BaseObject):
-    """
-    Represents a continent.
-    """
+    """Represents a continent."""
 
     name = _StringField('Name for the continent')
     omms_id = _IntField('OMMS identifier for the continent')
@@ -63,9 +58,7 @@ class Continent(_BaseObject):
 
 
 class Country(_BaseObject):
-    """
-    Represents a country.
-    """
+    """Represents a country."""
 
     name = _StringField('Country name')
     tam_id = _IntField('TAM identifier of the country')
@@ -75,9 +68,7 @@ class Country(_BaseObject):
 
 
 class Address(_BaseObject):
-    """
-    Represents a postal / residential address.
-    """
+    """Represents a postal / residential address."""
 
     line_1 = _StringField('First line')
     line_2 = _StringField('Second line')
@@ -88,9 +79,7 @@ class Address(_BaseObject):
 
 
 class BirthPlace(_BaseObject):
-    """
-    Represents a birth place.
-    """
+    """Represents a birth place."""
 
     postal_code = _StringField('Postal code')
     insee_code = _StringField('INSEE code')
@@ -99,8 +88,7 @@ class BirthPlace(_BaseObject):
 
 
 class StructureStatus(_Enum):
-    """
-    Describe a structure status.
+    """Describe a structure status.
 
     .. py:data:: OPEN
 
@@ -123,8 +111,7 @@ class StructureStatus(_Enum):
 
 
 class StructureType(_Enum):
-    """
-    Describe a structure type.
+    """Describe a structure type.
 
     .. py:data:: SOMMET
 
@@ -241,15 +228,11 @@ class StructureType(_Enum):
 
 
 class Structure(_BaseObject):
-    """
-    Representation of the structure.
-    """
+    """Representation of the structure."""
 
     @classmethod
     def Label(klass, *args, **kwargs):
-        """
-        Get a filter for reading the code and name from a string.
-        """
+        """Get a filter for reading the code and name from a string."""
 
         class Filter(_CleanText):
             def __call__(self, item):
@@ -271,9 +254,7 @@ class Structure(_BaseObject):
 
     @classmethod
     def Type(klass, *args, **kwargs):
-        """
-        Get a filter for reading the type from a string.
-        """
+        """Get a filter for reading the type from a string."""
 
         class Filter(_CleanText):
             def filter(self, item):  # noqa: A003
@@ -316,9 +297,7 @@ class Structure(_BaseObject):
 
     @classmethod
     def Status(klass, *args, **kwargs):
-        """
-        Get a filter for reading the status from a string.
-        """
+        """Get a filter for reading the status from a string."""
 
         class Filter(_CleanText):
             def filter(self, item):  # noqa: A003
@@ -348,9 +327,7 @@ class Structure(_BaseObject):
 
     @property
     def label(self):
-        """
-        Get the structure label.
-        """
+        """Get the structure label."""
 
         if self.code and self.name:
             return f'{self.code} - {self.name}'
@@ -362,15 +339,11 @@ class Structure(_BaseObject):
 
 
 class Function(_BaseObject):
-    """
-    Describe a function and its properties.
-    """
+    """Describe a function and its properties."""
 
     @classmethod
     def Label(klass, *args, **kwargs):
-        """
-        Get a filter for gathering the structure code and name from a label.
-        """
+        """Get a filter for gathering structure codes and names from labels."""
 
         class Filter(_CleanText):
             __slots__ = ('_is_full',)
@@ -419,9 +392,7 @@ class Function(_BaseObject):
 
     @property
     def label(self):
-        """
-        Get the function label.
-        """
+        """Get the function label."""
 
         if self.code and self.name:
             return f'{self.name} ({self.code})'
@@ -433,9 +404,7 @@ class Function(_BaseObject):
 
 
 class PersonType(_Enum):
-    """
-    Describe the person type.
-    """
+    """Describe the person type."""
 
     UNKNOWN = 'unknown'
 
@@ -444,9 +413,7 @@ class PersonType(_Enum):
 
 
 class PersonTitle(_Enum):
-    """
-    Describe a person title.
-    """
+    """Describe a person title."""
 
     UNKNOWN = 'unknown'
 
@@ -459,9 +426,7 @@ class PersonTitle(_Enum):
 
 
 class PersonStatus(_Enum):
-    """
-    Describe a person status.
-    """
+    """Describe a person status."""
 
     UNKNOWN = 'unknown'
 
@@ -474,9 +439,7 @@ class PersonStatus(_Enum):
 
 
 class AllocationsRegime(_Enum):
-    """
-    Describe an allocations regime.
-    """
+    """Describe an allocations regime."""
 
     UNKNOWN = 'unknown'
 
@@ -486,9 +449,7 @@ class AllocationsRegime(_Enum):
 
 
 class Person(_BaseObject):
-    """
-    Describe an adherent or a legal entity and its properties.
-    """
+    """Describe an adherent or a legal entity and its properties."""
 
     TYPE_UNKNOWN = PersonType.UNKNOWN
     TYPE_INDIVIDUAL = PersonType.INDIVIDUAL
@@ -540,7 +501,7 @@ class Person(_BaseObject):
                 if _empty(item.obj._has_title) or not _empty(self._has_title):
                     item.obj._has_title = self._has_title
 
-                if isinstance(full_name, _unicode):
+                if isinstance(full_name, str):
                     full_name = full_name.strip()
                     if full_name == '(Sans nom)':
                         full_name = None
@@ -562,7 +523,7 @@ class Person(_BaseObject):
 
     @property
     def title(self):
-        """ Person civility title. """
+        """Person civility title."""
 
         if not _empty(self._title):
             return self._title
@@ -586,8 +547,7 @@ class Person(_BaseObject):
 
     @property
     def _full_name_components(self):
-        """
-        Get the full name components.
+        """Get the full name components.
 
         The result is available as a tuple of the following elements:
 
@@ -606,7 +566,6 @@ class Person(_BaseObject):
             return _NotAvailable, _NotAvailable, _NotAvailable, _NotAvailable
 
         # Get the birth name, if available.
-
         m = _re.match(r'([^\(\)]*)(?:\((.*)\))?', full_name)
         full_name, birth_name = m.groups()
 
@@ -616,7 +575,6 @@ class Person(_BaseObject):
             birth_name = birth_name.strip()
 
         # Get the title, if available.
-
         full_name = full_name.split()
         if not full_name:
             return _NotAvailable, _NotAvailable, _NotAvailable, birth_name
@@ -639,7 +597,6 @@ class Person(_BaseObject):
         #
         # Note that if we already have the last or first name,
         # we use that to get the delimitation.
-
         last_name = self.last_name or _NotAvailable
         first_name = self.first_name or _NotAvailable
         if full_name:
@@ -681,18 +638,14 @@ class Person(_BaseObject):
 
     @property
     def deduced_last_name(self):
-        """
-        Deduced last name from the full name, when available.
-        """
+        """Deduced last name from the full name, when available."""
 
         _, result, _, _ = self._full_name_components
         return result
 
     @property
     def deduced_first_name(self):
-        """
-        Deduced first name from the full name, when available.
-        """
+        """Deduced first name from the full name, when available."""
 
         _, _, result, _ = self._full_name_components
         return result
@@ -701,9 +654,7 @@ class Person(_BaseObject):
 
     @property
     def birth_name(self):
-        """
-        Birth name.
-        """
+        """Birth name."""
 
         if not _empty(self._birth_name):
             return self._birth_name
@@ -750,9 +701,7 @@ class Person(_BaseObject):
 
 
 class Delegation(_BaseObject):
-    """
-    Describe a secondary function.
-    """
+    """Describe a secondary function."""
 
     person = _Field('Person', Person)
     structure = _Field('Structure', Structure)
@@ -761,9 +710,7 @@ class Delegation(_BaseObject):
 
 
 class BankAccount(_BaseObject):
-    """
-    Describe a bank account.
-    """
+    """Describe a bank account."""
 
     title = _StringField('Bank account title')
     rib = _StringField('Bank account RIB')
@@ -775,9 +722,7 @@ class BankAccount(_BaseObject):
 
 
 class InsuredGood(_BaseObject):
-    """
-    Describe an insured good ("bien").
-    """
+    """Describe an insured good ("bien")."""
 
     iid = _IIDField('Good IID')
     name = _StringField('Good name')
